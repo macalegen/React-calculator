@@ -8,7 +8,46 @@ const Calculator = () => {
   const [waitingForSecondOperand, setWaitingForSecondOperand] = useState(false);
   const [displayColor, setDisplayColor] = useState(styles.defaultColor);
 
-  const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+  const handleEquals = () => {
+    if (operator && !waitingForSecondOperand) {
+      const inputValue = parseInt(displayValue, 10);
+      if (isNaN(inputValue)) {
+        alert("Please enter a valid number.");
+        return;
+      }
+      const result = calculate(firstOperand, inputValue, operator);
+      setDisplayValue(String(result));
+      setFirstOperand(result);
+      setOperator(null);
+      setWaitingForSecondOperand(true);
+      setDisplayColor(styles.resultColor);
+    }
+  };
+
+  const clearDisplay = () => {
+    setDisplayValue("0");
+    setFirstOperand(null);
+    setOperator(null);
+    setWaitingForSecondOperand(false);
+    setDisplayColor(styles.defaultColor);
+  };
+
+  const buttons = [
+    { label: "7", action: () => inputDigit(7) },
+    { label: "8", action: () => inputDigit(8) },
+    { label: "9", action: () => inputDigit(9) },
+    { label: "4", action: () => inputDigit(4) },
+    { label: "5", action: () => inputDigit(5) },
+    { label: "6", action: () => inputDigit(6) },
+    { label: "1", action: () => inputDigit(1) },
+    { label: "2", action: () => inputDigit(2) },
+    { label: "3", action: () => inputDigit(3) },
+    { label: "0", action: () => inputDigit(0) },
+    { label: "-", action: () => performOperation("-") },
+    { label: "+", action: () => performOperation("+") },
+    { label: "C", action: clearDisplay },
+    { label: "=", action: handleEquals },
+  ];
 
   const inputDigit = (digit) => {
     if (waitingForSecondOperand) {
@@ -54,60 +93,21 @@ const Calculator = () => {
     }
   };
 
-  const handleEquals = () => {
-    if (operator && !waitingForSecondOperand) {
-      const inputValue = parseInt(displayValue, 10);
-      if (isNaN(inputValue)) {
-        alert("Please enter a valid number.");
-        return;
-      }
-      const result = calculate(firstOperand, inputValue, operator);
-      setDisplayValue(String(result));
-      setFirstOperand(result);
-      setOperator(null);
-      setWaitingForSecondOperand(true);
-      setDisplayColor(styles.resultColor);
-    }
-  };
-
-  const clearDisplay = () => {
-    setDisplayValue("0");
-    setFirstOperand(null);
-    setOperator(null);
-    setWaitingForSecondOperand(false);
-    setDisplayColor(styles.defaultColor);
-  };
-
   return (
     <div className={styles.calculator}>
       <div className={`${styles.display} ${displayColor}`}>{displayValue}</div>
       <div className={styles.buttons}>
         <div className={styles.row}>
-          {digits.map((digit) => (
-            <button key={digit} onClick={() => inputDigit(digit)}>
-              {digit}
+          {buttons.map((button) => (
+            <button
+              key={button.label}
+              onClick={button.action}
+              className={styles.digitButton}
+            >
+              {button.label}
             </button>
           ))}
-
-          <button
-            className={styles.minusButton}
-            onClick={() => performOperation("-")}
-          >
-            -
-          </button>
-          <button
-            className={styles.plusButton}
-            onClick={() => performOperation("+")}
-          >
-            +
-          </button>
-          <button onClick={handleEquals} className={styles.equalsButton}>
-            =
-          </button>
         </div>
-        <button onClick={clearDisplay} className={styles.clearButton}>
-          C
-        </button>
       </div>
     </div>
   );
